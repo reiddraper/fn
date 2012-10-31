@@ -66,7 +66,7 @@ complement_helper(Fun) ->
 -spec partial(fun((...) -> A), term()) -> fun((...) -> A).
 partial(Fun, Arg) ->
     FunArity = arity(Fun),
-    call_with_arglist(FunArity, partial_helper(Fun, Arg)).
+    call_with_arglist(FunArity - 1, partial_helper(Fun, Arg)).
 
 %% private
 -spec partial_helper(fun((...) -> A), term()) -> fun((list()) -> A).
