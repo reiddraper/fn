@@ -83,6 +83,25 @@ falsy_test() ->
     ?assertEqual(truthy(),
                  not (fn:complement(fun truthy/0))()).
 
+%% Partial
+
+partial_1_test() ->
+    Fun = fun erlang:'+'/2,
+    ?assertEqual((fn:partial(Fun, 5))(7), 12).
+
+partial_2_test() ->
+    Fun = fun erlang:'+'/2,
+    ?assertEqual((fn:partial(Fun, 1))(1), 2).
+
+partial_3_test() ->
+    Fun = fun (A, B, C) -> lists:foldl(fun erlang:'+'/2, 0, [A, B, C]) end,
+    ?assertEqual((fn:partial(Fun, 3))(5, 7), 15).
+
+partial_4_test() ->
+    Fun = fun (A, B, C) -> lists:foldl(fun erlang:'+'/2, 0, [A, B, C]) end,
+    PartialOne = fn:partial(Fun, 3),
+    ?assertEqual((fn:partial(PartialOne, 5))(7), 15).
+
 %% Flip
 
 integer_pairs() ->
