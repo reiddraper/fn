@@ -1,6 +1,6 @@
 ## fn
 
-Combinators for Erlang.
+Function utilities for Erlang.
 
 ## License
 
