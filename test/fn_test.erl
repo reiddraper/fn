@@ -67,4 +67,28 @@ identity_builder(Value) ->
             ?assertEqual(Value, fn:identity(Value))
     end.
 
+%% Flip
+
+integer_pairs() ->
+    [{1, 2},
+     {5, 99},
+     {10, 5},
+     {10, 4},
+     {77, 77},
+     {90, 1001}].
+
+flip_builder(A, B) ->
+    %% `Fun' must not be commutative
+    Fun = fun erlang:'/'/2,
+    fun () ->
+            ?assertEqual(erlang:apply(Fun, [A, B]),
+                         erlang:apply(fn:flip(Fun), [B, A]))
+    end.
+
+flip_suite_test_() ->
+    {setup,
+     fun () -> ok end,
+     [flip_builder(A, B) || {A, B} <- integer_pairs()]
+    }.
+
 -endif.
