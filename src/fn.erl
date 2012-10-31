@@ -31,6 +31,8 @@
          constantly/1,
          constantly/2,
          complement/1,
+         comp/1,
+         comp/2,
          partial/2,
          flip/1]).
 
@@ -81,6 +83,34 @@ complement(Fun) ->
 complement_helper(Fun) ->
     fun (Args) ->
             not erlang:apply(Fun, Args)
+    end.
+
+%% @doc Compose a list of functions together, right-to-left.
+%% Returns a function with arity equal to the last function.
+-spec comp([fun()]) -> fun((...) -> term()).
+comp([Fun]) ->
+    constantly(Fun);
+comp(Funs) ->
+    lists:foldl(fn:flip(fun comp/2),
+                hd(Funs),
+                tl(Funs)).
+
+%% @doc Compose two functions `FunA' and `FunB' together.
+%% Returns a function that has the same arity as `FunB'.
+%% The resulting function calls `FunB' and then `FunA'
+%% with the result of calling `FunA'.
+-spec comp(fun((...) -> term()), fun((...) -> B)) ->
+               fun((...) -> B).
+comp(FunA, FunB) ->
+    Arity = arity(FunB),
+    call_with_arglist(Arity, comp_helper(FunA, FunB)).
+
+%% @private
+-spec comp_helper(fun((...) -> term()), fun((...) -> B))
+                      -> fun((list()) -> B).
+comp_helper(FunA, FunB) ->
+    fun (Args) ->
+            FunA(erlang:apply(FunB, Args))
     end.
 
 %% @doc Return a function with one-less arity than `Fun'

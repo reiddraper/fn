@@ -109,6 +109,52 @@ falsy_test() ->
     ?assertEqual(truthy(),
                  not (fn:complement(fun truthy/0))()).
 
+%% Comp (compose)
+
+add_one(Arg) ->
+    Arg + 1.
+
+add_two(Arg) ->
+    Arg + 2.
+
+mul_two(Arg) ->
+    Arg * 2.
+
+mul_three(Arg) ->
+    Arg * 3.
+
+comp_1_test() ->
+    Fun = fn:comp([fun mul_two/1,
+                   fun add_one/1,
+                   fun add_one/1]),
+    ?assertEqual(Fun(10), 24).
+
+comp_2_test() ->
+    Fun = fn:comp([fun add_one/1,
+                   fun add_one/1,
+                   fun mul_two/1]),
+    ?assertEqual(Fun(10), 22).
+
+comp_3_test() ->
+    Fun = fn:comp(fun add_one/1, fun mul_two/1),
+    ?assertEqual(Fun(55), 111).
+
+comp_4_test() ->
+    Fun = fn:comp(fun mul_two/1, fun add_one/1),
+    ?assertEqual(Fun(55), 112).
+
+comp_5_test() ->
+    %% these functions commute
+    F1 = fn:comp(fun add_one/1, fun add_two/1),
+    F2 = fn:comp(fun add_two/1, fun add_one/1),
+    ?assertEqual(F1(47), F2(47)).
+
+comp_6_test() ->
+    %% these functions commute
+    F1 = fn:comp(fun mul_two/1, fun mul_three/1),
+    F2 = fn:comp(fun mul_three/1, fun mul_two/1),
+    ?assertEqual(F1(47), F2(47)).
+
 %% Partial
 
 partial_1_test() ->
