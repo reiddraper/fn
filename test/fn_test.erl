@@ -67,6 +67,32 @@ identity_builder(Value) ->
             ?assertEqual(Value, fn:identity(Value))
     end.
 
+%% Constantly
+
+constantly_suite_test_() ->
+    {setup,
+     fun () -> ok end,
+     [constantly_builder(Arity, Val) || Arity <- lists:seq(0, 3),
+                                        Val <- list_of_terms()]
+    }.
+
+constantly_builder(Arity, Val) ->
+    Constantly = fn:constantly(Arity, Val),
+    fun () ->
+            Result = eval_arity(Arity, Constantly),
+            ?assertEqual(Result, Val)
+    end.
+
+eval_arity(0, Fun) ->
+    Fun();
+eval_arity(1, Fun) ->
+    Fun(foo);
+eval_arity(2, Fun) ->
+    Fun(foo, bar);
+eval_arity(3, Fun) ->
+    Fun(foo, bar, baz).
+
+
 %% Complement
 
 truthy() ->

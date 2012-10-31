@@ -28,6 +28,8 @@
 
 -export([arity/1,
          identity/1,
+         constantly/1,
+         constantly/2,
          complement/1,
          partial/2,
          flip/1]).
@@ -45,6 +47,26 @@ arity(Fun) ->
 -spec identity(A) -> A.
 identity(Input) ->
     Input.
+
+%% @doc Return a zero arity function that returns
+%% `Val'.
+-spec constantly(A) -> fun(() -> A).
+constantly(Val) ->
+    constantly(0, Val).
+
+%% @doc Return a function that ignores it's arguments
+%% and always returns `Val'. The returned function
+%% has arity `Arity'.
+-spec constantly(non_neg_integer(), A) ->
+    fun((...) -> A).
+constantly(Arity, Val) ->
+    call_with_arglist(Arity, constantly_helper(Val)).
+
+%% @private
+constantly_helper(Val) ->
+    fun(_Args) ->
+            Val
+    end.
 
 %% @doc Return a function that calls `Fun' but returns
 %% the opposite boolean value. Works with functions of
