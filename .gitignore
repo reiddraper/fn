@@ -1,4 +1,4 @@
 .eunit/*
-ebin/
-doc/
+ebin/*
+doc/*
 current_counterexample.eqc
