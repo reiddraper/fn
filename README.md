@@ -6,6 +6,11 @@ ___
 
 Function utilities for Erlang.
 
+## edoc
+
+Documentation is [hosted here](http://reiddraper.github.com/fn/).
+You can also generate the documentation locally: `make docs`.
+
 ## License
 
 Copyright Reid Draper 2012. All Rights Reserved.
