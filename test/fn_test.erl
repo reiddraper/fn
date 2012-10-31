@@ -67,6 +67,22 @@ identity_builder(Value) ->
             ?assertEqual(Value, fn:identity(Value))
     end.
 
+%% Complement
+
+truthy() ->
+    true.
+
+falsy() ->
+    false.
+
+truthy_test() ->
+    ?assertEqual(truthy(),
+                 not (fn:complement(fun truthy/0))()).
+
+falsy_test() ->
+    ?assertEqual(truthy(),
+                 not (fn:complement(fun truthy/0))()).
+
 %% Flip
 
 integer_pairs() ->
