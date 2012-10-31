@@ -1,0 +1,3 @@
+{application,fn}.
+{packages,[]}.
+{modules,[fn]}.
