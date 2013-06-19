@@ -1,0 +1,174 @@
+<html>
+<head><title>.eunit/fn.COVER.html</title></head><body bgcolor=white text=black>
+<pre>
+File generated from /Users/reid/Documents/repos/masters/fn/.eunit/fn.erl by COVER 2013-06-19 at 14:44:56
+
+****************************************************************************
+
+        |  %% -------------------------------------------------------------------
+        |  %% Copyright (c) 2012 Reid Draper. All Rights Reserved.
+        |  %%
+        |  %% This file is provided to you under the Apache License,
+        |  %% Version 2.0 (the "License"); you may not use this file
+        |  %% except in compliance with the License.  You may obtain
+        |  %% a copy of the License at
+        |  %%
+        |  %%   http://www.apache.org/licenses/LICENSE-2.0
+        |  %%
+        |  %% Unless required by applicable law or agreed to in writing,
+        |  %% software distributed under the License is distributed on an
+        |  %% "AS IS" BASIS, WITHOUT WARRANTIES OR CONDITIONS OF ANY
+        |  %% KIND, either express or implied.  See the License for the
+        |  %% specific language governing permissions and limitations
+        |  %% under the License.
+        |  %%
+        |  %% -------------------------------------------------------------------
+        |  
+        |  %% @doc
+        |  
+        |  -module(fn).
+        |  
+        |  -ifdef(TEST).
+        |  -compile(export_all).
+        |  -include_lib("eunit/include/eunit.hrl").
+        |  -endif.
+        |  
+        |  -export([arity/1,
+        |           identity/1,
+        |           constantly/1,
+        |           constantly/2,
+        |           complement/1,
+        |           comp/1,
+        |           comp/2,
+        |           partial/2,
+        |           flip/1]).
+        |  
+        |  %%%===================================================================
+        |  %%% Public API
+        |  %%%===================================================================
+        |  
+        |  %% @doc Return the arity of the function argument
+        |  -spec arity(fun((...) -&gt; term())) -&gt; non_neg_integer().
+        |  arity(Fun) -&gt;
+    21..|      element(2, erlang:fun_info(Fun, arity)).
+        |  
+        |  %% @doc Return the input
+        |  -spec identity(A) -&gt; A.
+        |  identity(Input) -&gt;
+     9..|      Input.
+        |  
+        |  %% @doc Return a zero arity function that returns
+        |  %% `Val'.
+        |  -spec constantly(A) -&gt; fun(() -&gt; A).
+        |  constantly(Val) -&gt;
+<font color=red>     0..|      constantly(0, Val).</font>
+        |  
+        |  %% @doc Return a function that ignores it's arguments
+        |  %% and always returns `Val'. The returned function
+        |  %% has arity `Arity'.
+        |  -spec constantly(non_neg_integer(), A) -&gt;
+        |      fun((...) -&gt; A).
+        |  constantly(Arity, Val) -&gt;
+    36..|      call_with_arglist(Arity, constantly_helper(Val)).
+        |  
+        |  %% @private
+        |  constantly_helper(Val) -&gt;
+    36..|      fun(_Args) -&gt;
+    36..|              Val
+        |      end.
+        |  
+        |  %% @doc Return a function that calls `Fun' but returns
+        |  %% the opposite boolean value. Works with functions of
+        |  %% any arity.
+        |  -spec complement(fun((...) -&gt; boolean())) -&gt; fun((...) -&gt; boolean).
+        |  complement(Fun) -&gt;
+     2..|      FunArity = arity(Fun),
+     2..|      call_with_arglist(FunArity, complement_helper(Fun)).
+        |  
+        |  %% @private
+        |  -spec complement_helper(fun((...) -&gt; boolean())) -&gt; fun((list()) -&gt; boolean()).
+        |  complement_helper(Fun) -&gt;
+     2..|      fun (Args) -&gt;
+     2..|              not erlang:apply(Fun, Args)
+        |      end.
+        |  
+        |  %% @doc Compose a list of functions together, right-to-left.
+        |  %% Returns a function with arity equal to the last function.
+        |  -spec comp([fun()]) -&gt; fun((...) -&gt; term()).
+        |  comp([Fun]) -&gt;
+<font color=red>     0..|      constantly(Fun);</font>
+        |  comp(Funs) -&gt;
+     2..|      lists:foldl(fn:flip(fun comp/2),
+        |                  hd(Funs),
+        |                  tl(Funs)).
+        |  
+        |  %% @doc Compose two functions `FunA' and `FunB' together.
+        |  %% Returns a function that has the same arity as `FunB'.
+        |  %% The resulting function calls `FunB' and then `FunA'
+        |  %% with the result of calling `FunA'.
+        |  -spec comp(fun((...) -&gt; term()), fun((...) -&gt; B)) -&gt;
+        |                 fun((...) -&gt; B).
+        |  comp(FunA, FunB) -&gt;
+    10..|      Arity = arity(FunB),
+    10..|      call_with_arglist(Arity, comp_helper(FunA, FunB)).
+        |  
+        |  %% @private
+        |  -spec comp_helper(fun((...) -&gt; term()), fun((...) -&gt; B))
+        |                        -&gt; fun((list()) -&gt; B).
+        |  comp_helper(FunA, FunB) -&gt;
+    10..|      fun (Args) -&gt;
+    10..|              FunA(erlang:apply(FunB, Args))
+        |      end.
+        |  
+        |  %% @doc Return a function with one-less arity than `Fun'
+        |  %% with `Arg' implicitly as the first argument.
+        |  -spec partial(fun((...) -&gt; A), term()) -&gt; fun((...) -&gt; A).
+        |  partial(Fun, Arg) -&gt;
+     5..|      FunArity = arity(Fun),
+     5..|      call_with_arglist(FunArity - 1, partial_helper(Fun, Arg)).
+        |  
+        |  %% private
+        |  -spec partial_helper(fun((...) -&gt; A), term()) -&gt; fun((list()) -&gt; A).
+        |  partial_helper(Fun, Arg) -&gt;
+     5..|      fun (RestArgsAsList) -&gt;
+     5..|              erlang:apply(Fun, [Arg | RestArgsAsList])
+        |      end.
+        |  
+        |  %% @doc Flip the arguments of a binary function.
+        |  -spec flip(fun((A, B) -&gt; C)) -&gt; fun((B, A) -&gt; C).
+        |  flip(Fun) -&gt;
+    11..|      fun (A, B) -&gt;
+    20..|              Fun(B, A)
+        |      end.
+        |  
+        |  %%%===================================================================
+        |  %%% Private shared functions
+        |  %%%===================================================================
+        |  
+        |  call_with_arglist(0, Fun) -&gt;
+    11..|      fun () -&gt;
+    11..|              Fun([])
+        |      end;
+        |  call_with_arglist(1, Fun) -&gt;
+    22..|      fun (A) -&gt;
+    22..|              Fun([A])
+        |      end;
+        |  call_with_arglist(2, Fun) -&gt;
+    11..|      fun (A, B) -&gt;
+    11..|              Fun([A, B])
+        |      end;
+        |  call_with_arglist(3, Fun) -&gt;
+     9..|      fun (A, B, C) -&gt;
+     9..|              Fun([A, B, C])
+        |      end;
+        |  call_with_arglist(4, Fun) -&gt;
+<font color=red>     0..|      fun (A, B, C, D) -&gt;</font>
+<font color=red>     0..|              Fun([A, B, C, D])</font>
+        |      end;
+        |  call_with_arglist(5, Fun) -&gt;
+<font color=red>     0..|      fun (A, B, C, D, E) -&gt;</font>
+<font color=red>     0..|              Fun([A, B, C, D, E])</font>
+        |      end.
+</pre>
+</body>
+</html>

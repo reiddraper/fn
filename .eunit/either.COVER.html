@@ -1,0 +1,52 @@
+<html>
+<head><title>.eunit/either.COVER.html</title></head><body bgcolor=white text=black>
+<pre>
+File generated from /Users/reid/Documents/repos/masters/fn/.eunit/either.erl by COVER 2013-06-19 at 14:44:56
+
+****************************************************************************
+
+        |  -module(either).
+        |  
+        |  %% @doc An implementation of the Either monad, but with an emphasis on being
+        |  %% compatible with existing Erlang code. Hence using `{ok, ...}' and
+        |  %% `{error, ...}' instead of `Right' and `Left' (`Right' is success, `Left'
+        |  %% is failure, traditionally). Otherwise, nomenclature
+        |  %% should be identical to Haskell.
+        |  
+        |  -export_type([either/2]).
+        |  -export([return/1,
+        |           bind/2,
+        |           lift/2,
+        |           pipe/2]).
+        |  
+        |  -type either(A, B) :: {ok, A} | {error, B}.
+        |  
+        |  -spec return(A) -&gt; either(A, term()).
+        |  %% @doc Wrap `A' in `{ok, A}'. Put another way, returns puts `A' into the
+        |  %% Either monad.
+        |  return(A) -&gt;
+     7..|      {ok, A}.
+        |  
+        |  -spec bind(either(A, B), fun((A) -&gt; either(A, B))) -&gt; either(A, B).
+        |  %% @doc Apply `F' to the value inside the monad if it's `{ok, ...}',
+        |  %% otherwise just return the error tuple.
+        |  bind({error, _Error}=E, _F) -&gt;
+     4..|      E;
+        |  bind({ok, Value}, F) -&gt;
+     8..|      F(Value).
+        |  
+        |  -spec lift(either(A, Z), fun((A) -&gt; C)) -&gt; either(C, Z).
+        |  %% @doc Lets you use a function to act on an Either monad, but your function
+        |  %% can return a value. It will automatically be wrapped back into an
+        |  %% `{ok, ...}' tuple.
+        |  lift(M, F) -&gt;
+     2..|      bind(M, fun (A) -&gt; return(F(A)) end).
+        |  
+        |  -spec pipe(either(A, Z), [fun((A) -&gt; C)]) -&gt; either(C, Z).
+        |  %% @doc Lets you chain monadic function to apply to `M'. You might use it
+        |  %% like `pipe({ok, 5}, [Increment, Increment, Increment])'.
+        |  pipe(M, Funs) -&gt;
+     3..|      lists:foldl(fn:flip(fun bind/2), M, Funs).
+</pre>
+</body>
+</html>
