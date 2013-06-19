@@ -1,10 +1,11 @@
--module(either).
-
 %% @doc An implementation of the Either monad, but with an emphasis on being
 %% compatible with existing Erlang code. Hence using `{ok, ...}' and
 %% `{error, ...}' instead of `Right' and `Left' (`Right' is success, `Left'
 %% is failure, traditionally). Otherwise, nomenclature
 %% should be identical to Haskell.
+
+-module(either).
+
 
 -export_type([either/2]).
 -export([return/1,
