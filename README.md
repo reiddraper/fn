@@ -4,7 +4,15 @@
 
 ___
 
-Function utilities for Erlang.
+Function utilities and Monads for Erlang.
+
+## Project Installation:
+
+In your `rebar.config`:
+
+```
+{fn, "0.1.0", {git, "git://github.com/reiddraper/fn", {tag, "0.1.0"}}},
+```
 
 ## edoc
 
