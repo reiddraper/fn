@@ -2,3 +2,4 @@
 ebin/*
 doc/*
 current_counterexample.eqc
+.plt

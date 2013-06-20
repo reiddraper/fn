@@ -1,15 +1,38 @@
-.PHONY: test
+PLT=$(CURDIR)/.plt
+DEPS=erts kernel stdlib
 
-all: compile
+.PHONY: test xref dialyzer rebuild
+
+all: compile test xref dialyzer
 
 compile:
 	@./rebar compile
 
 clean:
+	@- rm -rf $(CURDIR)/ebin
 	@./rebar clean
 
 test: compile
 	@./rebar skip_deps=true eunit
+
+xref: compile
+	@./rebar xref
+
+clean_plt:
+	- rm $(PLT)
+
+$(PLT):
+	@echo Building local plt at $(PLT)
+	@echo
+	@dialyzer --output_plt $(PLT) --build_plt \
+	   --apps $(DEPS)
+
+dialyzer: $(PLT)
+	@dialyzer --fullpath --plt $(PLT) \
+		-Wrace_conditions -Wunmatched_returns -Wno_return\
+		-r ./ebin
+
+rebuild: clean clean_plt all
 
 ##
 ## Doc targets
