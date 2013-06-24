@@ -33,6 +33,20 @@ prop_associative() ->
                 either:bind(M, fun (A) -> either:bind(F(A), G) end)
             end)).
 
+%% Kleisli Composition Equivalent
+%% ---------------------------------------------------------------------------
+
+%% Note this is more or less the same as the `prop_associative' test.
+prop_kleisli() ->
+    numtests(?NUM_TESTS,
+             ?FORALL({I, F, G}, {int(), either_fun(), either_fun()},
+                     begin
+                M = either:return(I),
+                either:bind(either:bind(M, F), G) ==
+                either:bind(M, either:kleisli(F, G))
+            end)).
+
+
 %% Generators
 %% ---------------------------------------------------------------------------
 
