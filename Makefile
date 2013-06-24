@@ -15,6 +15,9 @@ clean:
 test: compile
 	@./rebar skip_deps=true eunit
 
+qc: compile
+	@./rebar qc
+
 xref: compile
 	@./rebar xref
 
