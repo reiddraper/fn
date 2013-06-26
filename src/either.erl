@@ -11,6 +11,7 @@
 -export([return/1,
          bind/2,
          lift/2,
+         kleisli/1,
          kleisli/2,
          pipe/2]).
 
@@ -37,9 +38,14 @@ bind({ok, Value}, F) ->
 lift(M, F) ->
     bind(M, fun (A) -> return(F(A)) end).
 
+-spec kleisli([fun()]) -> fun((A) -> either(A, _B)).
+%% @doc Like `kleisli/2' but takes a list of functions.
+kleisli(Functions) ->
+    lists:foldl(fun kleisli/2, fun return/1, Functions).
+
 -spec kleisli(fun((A) -> either(B, Z)), fun((B) -> either(C, Z))) ->
                   fun((A) -> either(C, Z)).
-%% @doc Kleisli Monad composition.
+%% @doc Kleisli Monad composition. Left to right.
 kleisli(F, G) ->
     fun (X) ->
             bind(F(X), G)

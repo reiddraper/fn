@@ -46,6 +46,14 @@ prop_kleisli() ->
                 either:bind(M, either:kleisli(F, G))
             end)).
 
+prop_kleisli_and_pipe() ->
+    numtests(?NUM_TESTS,
+             ?FORALL({I, Fs}, {int(), [either_fun()]},
+                     begin
+                M = either:return(I),
+                either:bind(M, either:kleisli(Fs)) ==
+                either:pipe(M, Fs)
+            end)).
 
 %% Generators
 %% ---------------------------------------------------------------------------
