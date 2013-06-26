@@ -1,0 +1,78 @@
+<!DOCTYPE HTML PUBLIC "-//W3C//DTD HTML 3.2 Final//EN">
+<html>
+<head>
+<meta http-equiv="Content-Type" content="text/html; charset=iso-8859-1"/>
+<title>.eunit/either_eqc.COVER.html</title>
+</head><body style='background-color: white; color: black'>
+<pre>
+File generated from /Users/reid/Documents/repos/masters/fn/.eunit/either_eqc.erl by COVER 2013-06-26 at 16:42:11
+
+****************************************************************************
+
+        |  -module(either_eqc).
+        |  
+        |  -compile(export_all).
+        |  
+        |  -ifdef(EQC).
+        |  
+        |  -define(NUM_TESTS, 1000).
+        |  
+        |  -include_lib("eqc/include/eqc.hrl").
+        |  -include_lib("eunit/include/eunit.hrl").
+        |  
+        |  %% Monad law tests
+        |  %% ---------------------------------------------------------------------------
+        |  
+        |  prop_left_identity() -&gt;
+<font color=red>     0..|      numtests(?NUM_TESTS,</font>
+        |               ?FORALL({I, F}, {int(), either_fun()},
+<font color=red>     0..|                       either:bind(either:return(I), F) ==</font>
+        |                       F(I))).
+        |  
+        |  prop_right_identity() -&gt;
+<font color=red>     0..|      numtests(?NUM_TESTS,</font>
+        |               ?FORALL(I, int(),
+<font color=red>     0..|                       either:bind({ok, I}, fun either:return/1) ==</font>
+        |                       {ok, I})).
+        |  
+        |  prop_associative() -&gt;
+<font color=red>     0..|      numtests(?NUM_TESTS,</font>
+        |               ?FORALL({I, F, G}, {int(), either_fun(), either_fun()},
+<font color=red>     0..|                       begin</font>
+<font color=red>     0..|                  M = {ok, I},</font>
+<font color=red>     0..|                  either:bind(either:bind(M, F), G) ==</font>
+<font color=red>     0..|                  either:bind(M, fun (A) -&gt; either:bind(F(A), G) end)</font>
+        |              end)).
+        |  
+        |  %% Kleisli Composition Equivalent
+        |  %% ---------------------------------------------------------------------------
+        |  
+        |  %% Note this is more or less the same as the `prop_associative' test.
+        |  prop_kleisli() -&gt;
+<font color=red>     0..|      numtests(?NUM_TESTS,</font>
+        |               ?FORALL({I, F, G}, {int(), either_fun(), either_fun()},
+<font color=red>     0..|                       begin</font>
+<font color=red>     0..|                  M = either:return(I),</font>
+<font color=red>     0..|                  either:bind(either:bind(M, F), G) ==</font>
+        |                  either:bind(M, either:kleisli(F, G))
+        |              end)).
+        |  
+        |  prop_kleisli_and_pipe() -&gt;
+<font color=red>     0..|      numtests(?NUM_TESTS,</font>
+        |               ?FORALL({I, Fs}, {int(), [either_fun()]},
+<font color=red>     0..|                       begin</font>
+<font color=red>     0..|                  M = either:return(I),</font>
+<font color=red>     0..|                  either:bind(M, either:kleisli(Fs)) ==</font>
+        |                  either:pipe(M, Fs)
+        |              end)).
+        |  
+        |  %% Generators
+        |  %% ---------------------------------------------------------------------------
+        |  
+        |  either_fun() -&gt;
+<font color=red>     0..|      ?LET(X, function1(int()), fun (A) -&gt; either:return(X(A)) end).</font>
+        |  
+        |  -endif.
+</pre>
+</body>
+</html>
