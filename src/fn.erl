@@ -41,7 +41,7 @@
 %%%===================================================================
 
 %% @doc Return the arity of the function argument
--spec arity(fun((...) -> term())) -> non_neg_integer().
+-spec arity(fun()) -> non_neg_integer().
 arity(Fun) ->
     element(2, erlang:fun_info(Fun, arity)).
 
@@ -52,15 +52,14 @@ identity(Input) ->
 
 %% @doc Return a zero arity function that returns
 %% `Val'.
--spec constantly(A) -> fun(() -> A).
+-spec constantly(any()) -> fun().
 constantly(Val) ->
     constantly(0, Val).
 
 %% @doc Return a function that ignores it's arguments
 %% and always returns `Val'. The returned function
 %% has arity `Arity'.
--spec constantly(non_neg_integer(), A) ->
-    fun((...) -> A).
+-spec constantly(non_neg_integer(), any()) -> fun().
 constantly(Arity, Val) ->
     call_with_arglist(Arity, constantly_helper(Val)).
 
@@ -73,13 +72,13 @@ constantly_helper(Val) ->
 %% @doc Return a function that calls `Fun' but returns
 %% the opposite boolean value. Works with functions of
 %% any arity.
--spec complement(fun((...) -> boolean())) -> fun((...) -> boolean).
+-spec complement(fun()) -> fun().
 complement(Fun) ->
     FunArity = arity(Fun),
     call_with_arglist(FunArity, complement_helper(Fun)).
 
 %% @private
--spec complement_helper(fun((...) -> boolean())) -> fun((list()) -> boolean()).
+-spec complement_helper(fun()) -> fun().
 complement_helper(Fun) ->
     fun (Args) ->
             not erlang:apply(Fun, Args)
@@ -87,7 +86,7 @@ complement_helper(Fun) ->
 
 %% @doc Compose a list of functions together, right-to-left.
 %% Returns a function with arity equal to the last function.
--spec comp([fun()]) -> fun((...) -> term()).
+-spec comp([fun()]) -> fun().
 comp([Fun]) ->
     constantly(Fun);
 comp(Funs) ->
@@ -99,15 +98,13 @@ comp(Funs) ->
 %% Returns a function that has the same arity as `FunB'.
 %% The resulting function calls `FunB' and then `FunA'
 %% with the result of calling `FunA'.
--spec comp(fun((...) -> term()), fun((...) -> B)) ->
-               fun((...) -> B).
+-spec comp(fun(), fun()) -> fun().
 comp(FunA, FunB) ->
     Arity = arity(FunB),
     call_with_arglist(Arity, comp_helper(FunA, FunB)).
 
 %% @private
--spec comp_helper(fun((...) -> term()), fun((...) -> B))
-                      -> fun((list()) -> B).
+-spec comp_helper(fun(), fun()) -> fun().
 comp_helper(FunA, FunB) ->
     fun (Args) ->
             FunA(erlang:apply(FunB, Args))
@@ -115,13 +112,13 @@ comp_helper(FunA, FunB) ->
 
 %% @doc Return a function with one-less arity than `Fun'
 %% with `Arg' implicitly as the first argument.
--spec partial(fun((...) -> A), term()) -> fun((...) -> A).
+-spec partial(fun(), term()) -> fun().
 partial(Fun, Arg) ->
     FunArity = arity(Fun),
     call_with_arglist(FunArity - 1, partial_helper(Fun, Arg)).
 
 %% private
--spec partial_helper(fun((...) -> A), term()) -> fun((list()) -> A).
+-spec partial_helper(fun(), term()) -> fun().
 partial_helper(Fun, Arg) ->
     fun (RestArgsAsList) ->
             erlang:apply(Fun, [Arg | RestArgsAsList])
