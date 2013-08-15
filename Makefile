@@ -32,7 +32,7 @@ $(PLT):
 
 dialyzer: $(PLT)
 	@dialyzer --fullpath --plt $(PLT) \
-		-Wrace_conditions -Wunmatched_returns -Wno_return\
+		-Wunmatched_returns -Wno_return\
 		-r ./ebin
 
 rebuild: clean clean_plt all
