@@ -11,7 +11,7 @@ Function utilities and Monads for Erlang.
 In your `rebar.config`:
 
 ```
-{fn, "0.2.0", {git, "git://github.com/reiddraper/fn", {tag, "0.2.0"}}},
+{fn, "0.3.0", {git, "git://github.com/reiddraper/fn", {tag, "0.3.0"}}},
 ```
 
 ## edoc
