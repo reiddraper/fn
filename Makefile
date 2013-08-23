@@ -3,7 +3,7 @@ DEPS=erts kernel stdlib
 
 .PHONY: test xref dialyzer rebuild
 
-all: compile test xref dialyzer
+all: compile test qc xref dialyzer
 
 compile:
 	@./rebar compile
