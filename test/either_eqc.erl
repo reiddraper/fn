@@ -55,6 +55,18 @@ prop_kleisli_and_pipe() ->
                 either:pipe(M, Fs)
             end)).
 
+%% Sequence Properties
+%% ---------------------------------------------------------------------------
+
+prop_sequence() ->
+    numtests(?NUM_TESTS,
+             ?FORALL(Ls, list(int()),
+                     begin
+                MLs = lists:map(fun either:return/1, Ls),
+                {ok, NewLs} = either:sequence(MLs),
+                NewLs =:= Ls
+            end)).
+
 %% Generators
 %% ---------------------------------------------------------------------------
 

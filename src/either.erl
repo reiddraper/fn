@@ -13,7 +13,8 @@
          lift/2,
          kleisli/1,
          kleisli/2,
-         pipe/2]).
+         pipe/2,
+         sequence/1]).
 
 -type either(A, B) :: {ok, A} | {error, B}.
 
@@ -56,3 +57,18 @@ kleisli(F, G) ->
 %% like `pipe({ok, 5}, [Increment, Increment, Increment])'.
 pipe(M, Funs) ->
     lists:foldl(fn:flip(fun bind/2), M, Funs).
+
+-spec sequence([either(A, B)]) -> either([A], B).
+%% @doc Turn a list of `either(A, B)' into `either([A], B)'. Put another way,
+%% turns `[{ok, 5}, {ok, 6}]' into `{ok, [5, 6]}'. If there are _any_ errors,
+%% then that is returned (returns the first error in the list).
+%% So `[{ok, 5}, {error, foo}, {error, bar}, {ok, 7}]' returns
+%% `{error, foo}'.
+sequence(Eithers) ->
+    %% `foldlr' to avoid reversing
+    lists:foldr(fun sequence_fold/2, return([]), Eithers).
+
+sequence_fold(Elem, Acc) ->
+    bind(Elem, fun(Item) ->
+                bind(Acc, fun (AccList) ->
+                            return([Item | AccList]) end) end).
