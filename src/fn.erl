@@ -97,7 +97,7 @@ comp(Funs) ->
 %% @doc Compose two functions `FunA' and `FunB' together.
 %% Returns a function that has the same arity as `FunB'.
 %% The resulting function calls `FunB' and then `FunA'
-%% with the result of calling `FunA'.
+%% with the result of calling `FunB'.
 -spec comp(fun(), fun()) -> fun().
 comp(FunA, FunB) ->
     Arity = arity(FunB),
